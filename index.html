@@ -233,6 +233,7 @@ td.wrapcell{white-space:normal;min-width:110px;max-width:260px;font-size:12.5px;
 .bcard .acts button{background:transparent;border:1px solid var(--b-line);color:var(--b-fg);border-radius:8px;padding:6px 12px}
 .bcard .tbl2{width:100%;font-size:12.5px;margin-top:10px} .bcard .tbl2 td{border-top:1px solid var(--b-line);padding:5px 4px;background:transparent!important}
 .rk-btns{display:flex;gap:6px;flex-wrap:wrap}
+.bcard .sec{margin-top:16px;color:var(--b-gold);font-family:var(--font-display);font-size:14px;font-weight:700}
 .rk-btns .btn{width:104px;text-align:center;padding:6px 0}
 .ikpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;margin-bottom:16px}
 .ikpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
@@ -254,9 +255,8 @@ td.wrapcell{white-space:normal;min-width:110px;max-width:260px;font-size:12.5px;
 .qt th.c,.qt td.c{text-align:center}
 .qt thead th,.qt thead th.r{text-align:center;vertical-align:middle}
 .qt td.op{overflow:visible;text-overflow:clip}
-.qt tbody td{padding-top:5px;padding-bottom:5px;line-height:1.3;white-space:nowrap}
+.qt tbody td{padding-top:8px;padding-bottom:8px;line-height:1.45;white-space:nowrap}
 .qt tbody .btn{padding:2px 8px;line-height:1.3}
-.qt tbody .q{padding:1px 6px}
 .qt tbody .pill{padding:1px 8px}
 footer{color:var(--muted);font-size:12.5px;padding-block:24px 30px;border-top:1px solid var(--line);margin-top:20px}
 @media (prefers-reduced-motion:no-preference){ .drawer{animation:slide .18s ease-out} @keyframes slide{from{transform:translateX(30px);opacity:.6}to{transform:none;opacity:1}} }
@@ -463,7 +463,7 @@ function viewRanking() {
   const divs = D.diverg.length ? `<p class="hint">Conferência: os totais seguem a aba ${D.rankingAba}. Diferença com a base bruta: ${D.diverg.map(x => esc(x[0]) + ' ranking ' + esc(x[1]) + ' x base ' + esc(x[2])).join('; ')} (PF, Adesão, PME — o ranking conta adesões canceladas).</p>` : '';
   return `
   <div class="card">
-    <div class="rk-head"><h2>Ranking ${D.mes} — ${esc(teamById(t).nome)}</h2><div class="rk-btns"><button class="btn pri" data-bolteam="1">Equipe</button>${imp ? '<button class="btn pri" data-bolrank="top">TOP 10</button><button class="btn pri" data-bolrank="ofe">Ofensores</button><button class="btn pri" data-bolrank="proj">Projeção</button>' : ''}</div></div>
+    <div class="rk-head"><h2>Ranking ${D.mes} — ${esc(teamById(t).nome)}</h2><div class="rk-btns"><button class="btn pri" data-bolteam="1">Equipe</button>${imp ? '<button class="btn pri" data-bolrank="top">TOP 10</button><button class="btn pri" data-bolrank="pme">TOP 16 PME</button><button class="btn pri" data-bolrank="proj">Projeção</button><button class="btn pri" data-bolrank="ofe">Ofensores</button>' : ''}</div></div>
     <p class="hint">${imp ? '' : `<b>${esc(teamById(t).cargo)} ${esc(teamById(t).sup)}</b> · `}${fmt(T)} vidas de ${fmt(meta)} (meta) · desafio ${fmt(des)} · ${ss.filter(s => s.total > 0).length} de ${ss.length} já produzindo · dia ${ontem}: +${ontemTot}${dest && dest.daily[dIdx] ? ` (destaque ${esc(dest.nome)}, +${dest.daily[dIdx]})` : ''} · líder: ${esc(lider.nome)} (${lider.total}). Clique no nome para ver cancelamentos, produtos e pontos de gestão.</p>
     <div class="tbl"><table id="rkTable"><thead><tr><th>#</th>${H('nome','Operador')}${imp ? '<th>Equipe</th>' : ''}${H('pf','PF',1)}${H('ad','Adesão',1)}${H('pme','PME',1)}${H('total','Total',1)}<th class="r">% Meta</th>${H('faltaMeta','Falta p/ meta',1)}${H('meta','Meta',1)}${H('faltaDesafio','Falta p/ desafio',1)}${H('desafio','Desafio',1)}${H('proj','Projeção/Mês',1)}<th class="r">% Proj.</th><th>Quartil</th><th>Boletim</th></tr></thead>
     <tbody>${rows}</tbody>
@@ -628,12 +628,11 @@ function viewPme() {
   return `
   <div class="grid2">
   <div class="card"><h2>Top 16 de PME — gestões Josy + Fabio</h2><p class="hint">Ranking combinado pelas vidas PME das abas RANKING JOSY e RANKING FABIO. Corte do Top 16 hoje: <b>${corte} vidas</b>. Linhas em destaque são desta gestão.</p>
-    <div class="tbl"><table><thead><tr><th class="r">#</th><th>Operador</th><th>Gestão</th><th>Supervisor</th><th class="r">Vidas PME</th></tr></thead><tbody>
-    ${top.map(x => `<tr class="${x.gestao === 'Josy' ? 'podium' : ''}"><td class="r num">${x.pos}</td><td>${esc(x.nome)}</td><td>${x.gestao}</td><td class="muted">${esc(x.sup)}</td><td class="r num"><b>${x.pme}</b></td></tr>`).join('')}
+    <div class="tbl"><table><thead><tr><th class="r">#</th><th>Operador</th><th>Supervisor</th><th>Gestão</th><th class="r">Vidas PME</th></tr></thead><tbody>
+    ${top.map(x => `<tr class="${x.gestao === 'Josy' ? 'podium' : ''}"><td class="r num">${x.pos}</td><td>${esc(x.nome)}</td><td class="muted">${esc(x.sup)}</td><td>${x.gestao}</td><td class="r num"><b>${x.pme}</b></td></tr>`).join('')}
     </tbody></table></div></div>
-  <div class="card"><h2>5 oportunidades da equipe</h2><p class="hint">Operadores desta equipe fora do Top 16 e mais perto do corte (${corte}).</p>
-    <div class="hbars">${op.map(s => `<div class="hb"><span class="t">${esc(s.nome)}</span><div class="track"><i class="gold" style="width:${Math.min(100, s.pme / corte * 100)}%"></i></div><span class="num r">${s.pme}</span></div>`).join('')}</div>
-    <div class="tbl" style="margin-top:12px"><table><thead><tr><th>Operador</th><th class="r">PME</th><th class="r">Faltam p/ o corte</th><th class="r">Posição geral</th></tr></thead><tbody>
+  <div class="card" style="align-self:start"><h2>5 oportunidades da equipe</h2><p class="hint">Operadores desta equipe fora do Top 16 e mais perto do corte (${corte}).</p>
+    <div class="tbl"><table><thead><tr><th>Operador</th><th class="r">PME</th><th class="r">Faltam p/ o TOP 16</th><th class="r">Posição geral</th></tr></thead><tbody>
     ${op.map(s => { const p = D.pmeGeral.find(x => x.nome === s.nome); return `<tr><td>${esc(s.nome)}</td><td class="r num">${s.pme}</td><td class="r num bad">${Math.max(0, corte - s.pme + 1)}</td><td class="r num">${p ? p.pos + 'º' : '—'}</td></tr>`; }).join('')}
     </tbody></table></div>
     <p class="hint" style="margin-top:10px">"Faltam" considera passar o 16º colocado (empate no corte não garante a vaga).</p></div>
@@ -819,6 +818,7 @@ function bolRank(tipo) {
   const ss = teamSellers('imperio').filter(s => s.ativo);
   const nomeEq = s => esc(teamById(s.team).nome.replace('Equipe ', ''));
   let lista, titulo, sub, cab, linha, msg;
+  if (tipo === 'pme') { bolPme(); return; }
   if (tipo === 'top') {
     lista = [...ss].sort((a, b) => b.total - a.total).slice(0, 10); titulo = 'TOP 10'; sub = `Os 10 operadores com mais vidas em ${D.mesl} até ${D.d1}`;
     cab = '<td><b>Operador</b></td><td><b>Equipe</b></td><td style="text-align:right"><b>Vidas</b></td><td style="text-align:right"><b>Projeção</b></td><td style="text-align:right"><b>Meta</b></td><td style="text-align:right"><b>% Meta</b></td>';
@@ -838,6 +838,27 @@ function bolRank(tipo) {
   bcard(`<div class="sub">Time Império — ${D.mes}</div><h3>${titulo}</h3><div class="sub" style="margin-top:0">${sub}</div>
     <table class="tbl2"><tr>${cab}</tr>${lista.map((s, i) => `<tr>${linha(s, i)}</tr>`).join('')}</table>
     <div class="msg">${msg}</div>`, titulo, 'imperio');
+}
+function bolPme() {
+  const R = 'style="text-align:right"';
+  const top = D.pmeGeral.slice(0, 16), corte = D.cortePme;
+  const eqNome = tid => { const t = tid && teamById(tid); return t ? esc(t.nome.replace('Equipe ', '')) : '—'; };
+  const josy = top.filter(x => x.gestao === 'Josy');
+  const fabio = top.length - josy.length;
+  const inTop = new Set(top.map(x => x.nome));
+  const op = teamSellers('imperio').filter(s => s.ativo && !inTop.has(s.nome)).sort((a, b) => b.pme - a.pme).slice(0, 5);
+  const falta = s => Math.max(0, corte - s.pme + 1);
+  const somaJosy = josy.reduce((a, x) => a + x.pme, 0);
+  const prox = op[0];
+  bcard(`<div class="sub">Time Império — ${D.mes}</div><h3>TOP 16 PME</h3><div class="sub" style="margin-top:0">Ranking de vidas PME das gestões Josy + Fabio até ${D.d1} · corte do Top 16: <b>${corte} vidas</b></div>
+    <div class="boxes"><div class="box"><b>${josy.length}</b><span>vagas Josy</span></div><div class="box"><b>${fabio}</b><span>vagas Fabio</span></div><div class="box"><b>${corte}</b><span>corte (16º)</span></div></div>
+    <div class="sec">Presentes no Top 16 de PME — Gestão Josy</div>
+    <table class="tbl2"><tr><td><b>Posição</b></td><td><b>Operador</b></td><td><b>Equipe</b></td><td ${R}><b>Vidas PME</b></td></tr>
+    ${josy.length ? josy.map(x => `<tr><td>${x.pos}º</td><td>${esc(x.nome)}</td><td>${eqNome(x.team)}</td><td ${R}><b>${x.pme}</b></td></tr>`).join('') : '<tr><td colspan="4">Nenhum operador da gestão Josy no Top 16 hoje.</td></tr>'}</table>
+    <div class="sec">5 oportunidades da Gestão Josy</div>
+    <table class="tbl2"><tr><td><b>Operador</b></td><td><b>Equipe</b></td><td ${R}><b>PME</b></td><td ${R}><b>Faltam p/ o TOP 16</b></td><td ${R}><b>Posição geral</b></td></tr>
+    ${op.map(s => { const p = D.pmeGeral.find(x => x.nome === s.nome); return `<tr><td>${esc(s.nome)}</td><td>${eqNome(s.team)}</td><td ${R}>${s.pme}</td><td ${R}><b>${falta(s)}</b></td><td ${R}>${p ? p.pos + 'º' : '—'}</td></tr>`; }).join('')}</table>
+    <div class="msg"><p>🏢 A gestão Josy ocupa <b>${josy.length} das 16 vagas</b>, com ${somaJosy} vidas PME somadas${josy[0] ? `; ${esc(first(josy[0].nome))} é a melhor colocada (${josy[0].pos}º, ${josy[0].pme} vidas)` : ''}.</p></div>`, 'TOP 16 PME', 'imperio');
 }
 async function baixarSla() {
   if (!window.XLSX) { alertMsg('Não foi possível gerar a planilha agora. Recarregue a página e tente de novo.'); return; }
