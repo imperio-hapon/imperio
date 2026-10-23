@@ -3,24 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>
+<title>Painel Gestão Império</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
 html{-webkit-text-size-adjust:100%}
 body{margin:0}
 img{max-width:100%}
 [hidden]{display:none!important}
-:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
-/* todas as tabelas: colunas centralizadas, a primeira coluna à esquerda */
-table th,table td{text-align:center!important}
-table tr > th:first-child,table tr > td:first-child{text-align:left!important}
-</style>
-</head>
-<body>
-</head><body>
-<title>Painel Gestão Império</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<style>
+
 /* Layout: faixa navy de cabeçalho com logo Outubro Rosa à direita → abas de supervisor → sub-abas → cards de conteúdo; detalhe em gaveta lateral, boletins em modal escuro */
 /* Paleta: #014282 marinho · #0075CD azul · #00ADF9 ciano · #89CDFC azul-claro · #E4BABB rosado · #FECE90 pêssego · #F29166 coral · #B97C77 malva */
 :root{
@@ -279,8 +270,12 @@ thead th:not([data-sort]),.tbl2 tr.cab td{cursor:pointer;user-select:none} th .o
 footer{color:var(--muted);font-size:12.5px;padding-block:24px 30px;border-top:1px solid var(--line);margin-top:20px}
 @media (prefers-reduced-motion:no-preference){ .drawer{animation:slide .18s ease-out} @keyframes slide{from{transform:translateX(30px);opacity:.6}to{transform:none;opacity:1}} }
 @media (max-width:520px){ .hb{grid-template-columns:110px 1fr 46px} .suptab{min-width:0;flex:1 1 45%} .bcard .boxes{gap:6px} .bcard h3{font-size:26px} }
+/* todas as tabelas: colunas centralizadas, a primeira coluna à esquerda */
+table th,table td{text-align:center!important}
+table tr > th:first-child,table tr > td:first-child{text-align:left!important}
 </style>
-
+</head>
+<body>
 <header class="hdr">
   <div class="wrap">
     <div class="brand">
@@ -425,7 +420,10 @@ function pontosGestao(s) {
 
 // ---------- header / strips ----------
 function renderHeader() {
-  $('#hdrSub').textContent = `Corte ${D.corte} · dados até ${D.d1} (D-1) · ${D.duDec} de ${D.duMes} dias úteis decorridos · ${restam} restam`;
+  // subtítulo: o dia da atualização (se for dia útil) já conta como decorrido
+  const [cd, cm, ca] = String(D.corte).split('/').map(Number); const wd = new Date(ca, cm - 1, cd).getDay();
+  const duHoje = Math.min(D.duMes, D.duDec + (wd > 0 && wd < 6 && cm === Number(D.mm) ? 1 : 0));
+  $('#hdrSub').textContent = `Atualizado ${D.corte} · ${duHoje} de ${D.duMes} dias úteis decorridos · restam ${D.duMes - duHoje} dias úteis`;
   const g = D.gestoes, j = g[0], f = g[1], a = g[2];
   const vs = x => x.setAteHoje ? ` · vs ${D.mesAntAbrev.toLowerCase()}. mesmo dia ${x.tot >= x.setAteHoje ? '+' : ''}${pct((x.tot / x.setAteHoje - 1) * 100)}` : '';
   $('#gestStrip').innerHTML = `<span class="tag">Gestões · ${D.mesl}</span>
@@ -862,28 +860,29 @@ function bolRank(tipo) {
   if (tipo === 'pme') { bolPme(); return; }
   if (tipo === 'ofe') { bolOfensores(); return; }
   if (tipo === 'top') {
-    // Império: projeção de 100 vidas ou mais; equipes: projeção de 100% da meta ou mais. Ordem: vidas.
-    lista = ss.filter(s => imp ? s.proj >= 100 : s.meta > 0 && s.proj >= s.meta).sort((a, b) => b.total - a.total || b.proj - a.proj); titulo = imp ? 'TOP 100' : topNome(tid);
-    sub = imp ? `${lista.length} promotores com projeção de 100 vidas ou mais no mês` : `${lista.length} promotores com projeção de 100% da meta ou mais`;
+    // Império e equipes: projeção de 100% da meta ou mais (confirmado pela usuária em 23/10). Ordem: vidas.
+    lista = ss.filter(s => s.meta > 0 && s.proj >= s.meta).sort((a, b) => b.total - a.total || b.proj - a.proj); titulo = imp ? 'TOP 100' : topNome(tid);
+    sub = `${lista.length} promotores com projeção de 100% da meta ou mais (ordem: vidas)`;
     cab = '<td><b>Promotor(a)</b></td><td><b>Equipe</b></td><td style="text-align:right"><b>Vidas</b></td><td style="text-align:right"><b>Projeção</b></td><td style="text-align:right"><b>Meta</b></td><td style="text-align:right"><b>% Meta</b></td>';
     linha = (s, i) => `<td>${i + 1}º ${esc(s.nome)}</td><td>${nomeEq(s)}</td><td style="text-align:right"><b>${s.total}</b></td><td style="text-align:right">${s.proj}</td><td style="text-align:right">${s.meta || '—'}</td><td style="text-align:right">${s.meta ? Math.round(s.proj / s.meta * 100) + '%' : '—'}</td>`;
     msg = lista.length ? `<p>🏆 ${esc(first(lista[0].nome))} lidera com ${lista[0].total} vidas (projeção de ${lista[0].proj}). Os ${lista.length} somam ${lista.reduce((a, s) => a + s.total, 0)} vidas.</p>` : '';
   } else if (tipo === 'semproj') {
     // nas equipes, quem já está em "Próximos da Meta" não se repete aqui (prioridade de Próximos da Meta)
-    const proximos = imp ? new Set() : new Set(ss.filter(s => s.meta > 0 && s.proj < s.meta).sort((a, b) => b.proj / b.meta - a.proj / a.meta).slice(0, 10).map(s => s.key));
-    lista = ss.filter(s => s.meta > 0 && s.proj < s.meta && !proximos.has(s.key)).sort((a, b) => a.proj - b.proj || b.meta - a.meta).slice(0, 10); titulo = 'Distantes da Meta'; sub = 'Os 10 com a menor projeção de vidas no mês (a menor em 1º)';
+    const proximos = imp ? new Set() : new Set(ss.filter(s => s.meta > 0 && s.proj < s.meta && s.proj / s.meta >= 0.6).map(s => s.key));
+    lista = ss.filter(s => s.meta > 0 && s.proj < s.meta && !proximos.has(s.key)).sort((a, b) => a.proj - b.proj || b.meta - a.meta).slice(0, 10); titulo = 'Distantes da Meta'; sub = imp ? 'Os 10 com a menor projeção de vidas no mês (a menor em 1º)' : 'Promotores(as) com a menor projeção de vidas no mês (a menor em 1º)';
     cab = '<td><b>Promotor(a)</b></td><td><b>Equipe</b></td><td style="text-align:right"><b>Vidas</b></td><td style="text-align:right"><b>Projeção</b></td><td style="text-align:right"><b>Meta</b></td><td style="text-align:right"><b>Falta</b></td>';
     linha = (s, i) => `<td>${i + 1}º ${esc(s.nome)}</td><td>${nomeEq(s)}</td><td style="text-align:right">${s.total}</td><td style="text-align:right"><b>${s.proj}</b></td><td style="text-align:right">${s.meta}</td><td style="text-align:right">${s.faltaMeta}</td>`;
     msg = `<p>📉 "Falta" = vidas que faltam para a meta do mês. Juntos, faltam ${lista.reduce((a, s) => a + s.faltaMeta, 0)} vidas. Prioridade de acompanhamento e monitoria.</p>`;
   } else {
-    lista = ss.filter(s => s.meta > 0 && s.proj < s.meta).sort((a, b) => b.proj / b.meta - a.proj / a.meta).slice(0, 10); titulo = 'Próximos da Meta'; sub = 'Os 10 mais perto da meta, mas que pela projeção ainda não chegam';
+    // equipes: só quem tem 60% ou mais de % Proj. (regra de 23/10); Império: os 10 mais perto
+    lista = ss.filter(s => s.meta > 0 && s.proj < s.meta && (imp || s.proj / s.meta >= 0.6)).sort((a, b) => b.proj / b.meta - a.proj / a.meta).slice(0, imp ? 10 : 999); titulo = 'Próximos da Meta'; sub = imp ? 'Os 10 mais perto da meta, mas que pela projeção ainda não chegam' : 'Os mais próximos da meta, mas que pela projeção ainda não';
     cab = '<td><b>Promotor(a)</b></td><td><b>Equipe</b></td><td style="text-align:right"><b>Projeção</b></td><td style="text-align:right"><b>% Proj.</b></td><td style="text-align:right"><b>Meta</b></td><td style="text-align:right"><b>Por dia</b></td>';
     linha = (s, i) => `<td>${i + 1}º ${esc(s.nome)}</td><td>${nomeEq(s)}</td><td style="text-align:right">${s.proj}</td><td style="text-align:right">${Math.round(s.proj / s.meta * 100)}%</td><td style="text-align:right">${s.meta}</td><td style="text-align:right"><b>${s.ritmo}</b></td>`;
     msg = `<p>🎯 Com um pouco mais de ritmo eles batem a meta. "Por dia" = vidas por dia útil necessárias nos ${restam} dias úteis que restam.</p>`;
   }
   if (!imp) { cab = cab.replace('<td><b>Equipe</b></td>', ''); const l0 = linha; linha = (s, i) => l0(s, i).replace(`<td>${nomeEq(s)}</td>`, ''); }
   if (!lista.length) msg = '<p>Nenhum promotor(a) nesta lista hoje.</p>';
-  bcard(`<div class="sub">${esc(teamById(tid).nome)} — ${D.mes}</div><h3>${titulo}</h3><div class="sub" style="margin-top:0">${sub}</div>
+  bcard(`${tipo === 'top' && !imp ? '' : `<div class="sub">${esc(teamById(tid).nome)} — ${D.mes}</div>`}<h3>${titulo}</h3><div class="sub" style="margin-top:0">${sub}</div>
     <div class="rolagem"><table class="tbl2"><tr>${cab}</tr>${lista.map((s, i) => `<tr>${linha(s, i)}</tr>`).join('')}</table></div>
     <div class="msg">${msg}</div>`, titulo, tid);
 }
