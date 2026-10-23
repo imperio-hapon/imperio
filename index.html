@@ -245,7 +245,7 @@ td.wrapcell{white-space:normal;min-width:110px;max-width:260px;font-size:12.5px;
 .bcard .tbl2{width:100%;font-size:12.5px;margin-top:10px} .bcard .tbl2 td{border-top:1px solid var(--b-line);padding:5px 4px;background:transparent!important}
 .rk-btns{display:flex;gap:6px;flex-wrap:wrap}
 .bcard .sec{margin-top:16px;color:var(--b-gold);font-family:var(--font-display);font-size:14px;font-weight:700}
-.rk-btns .btn{width:104px;text-align:center;padding:6px 0}
+.rk-btns .btn{min-width:104px;text-align:center;padding:6px 12px;white-space:nowrap}
 .eq-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 8px}
 .eq-head h4{margin:0!important}
 .bcard .tbl2 td.bad{color:#FF9A8C;font-weight:700} .bcard .tbl2 td.good{color:#7FE0B0}
@@ -380,6 +380,7 @@ const fmtH = h => { if (h == null || isNaN(h)) return '—'; let m = Math.round(
 const tempoCls = h => h == null ? '' : h >= META_TEMPO_H ? 'good' : 'bad';
 const DD = (a, b) => { const p = s => { const m = /^(\d{2})\/(\d{2})/.exec(s || ''); return m ? new Date(+D.corte.slice(6), +m[2] - 1, +m[1]) : null; }; const x = p(a), y = p(b); return x && y ? (y - x) / 864e5 : null; };
 const teamSellers = t => D.sellers.filter(s => t === 'imperio' ? IMPERIO.includes(s.team) : s.team === t).sort((a,b) => b.total - a.total || b.meta - a.meta);
+const topNome = id => 'TOP ' + String(teamById(id).nome).replace(/^Equipe\s+/, '');  // botão TOP de cada equipe: "TOP Legionários", "TOP Alpha"…
 const teamById = id => id === 'imperio' ? IMP_TEAM : [...D.teams, ...D.extraTeams].find(t => t.id === id);
 const lastClosedWeek = () => { const f = D.weeks.filter(w => w.fechada); return f.length ? f[f.length-1] : D.weeks[0]; };
 const currentWeek = () => D.weeks.find(w => w.iniciada && !w.fechada) || lastClosedWeek();
@@ -496,7 +497,7 @@ function viewRanking() {
   const divs = D.diverg.length ? `<p class="hint">Conferência: os totais seguem a aba ${D.rankingAba}. Diferença com a base bruta: ${D.diverg.map(x => esc(x[0]) + ' ranking ' + esc(x[1]) + ' x base ' + esc(x[2])).join('; ')} (PF, Adesão, PME — o ranking conta adesões canceladas).</p>` : '';
   return `
   <div class="card">
-    <div class="rk-head"><h2>Ranking ${D.mes} — ${esc(teamById(t).nome)}</h2>${imp ? '' : '<div class="rk-btns"><button class="btn pri" data-bolteam="1">Equipe</button><button class="btn pri" data-bolrank="top">TOP 100</button><button class="btn pri" data-bolrank="proj">Próximos da Meta</button><button class="btn pri" data-bolrank="semproj">Distantes da Meta</button></div>'}</div>
+    <div class="rk-head"><h2>Ranking ${D.mes} — ${esc(teamById(t).nome)}</h2>${imp ? '' : '<div class="rk-btns"><button class="btn pri" data-bolteam="1">Equipe</button><button class="btn pri" data-bolrank="top">' + esc(topNome(t)) + '</button><button class="btn pri" data-bolrank="proj">Próximos da Meta</button><button class="btn pri" data-bolrank="semproj">Distantes da Meta</button></div>'}</div>
     <p class="hint">${imp ? '' : `<b>${esc(teamById(t).cargo)} ${esc(teamById(t).sup)}</b> · `}${fmt(T)} vidas de ${fmt(meta)} (meta) · desafio ${fmt(des)} · ${ss.filter(s => s.total > 0).length} de ${ss.length} já produzindo · dia ${ontem}: +${ontemTot}${dest && dest.daily[dIdx] ? ` (destaque ${esc(dest.nome)}, +${dest.daily[dIdx]})` : ''} · líder: ${esc(lider.nome)} (${lider.total}). Clique no nome para ver cancelamentos, produtos e pontos de gestão.</p>
     <div class="tbl"><table id="rkTable"><thead><tr><th>#</th>${H('nome','Promotor(a)')}${imp ? '<th>Equipe</th>' : ''}${H('pf','PF',1)}${H('ad','Adesão',1)}${H('pme','PME',1)}${H('total','Total',1)}<th class="r">% Meta</th>${H('faltaMeta','Falta p/ meta',1)}${H('meta','Meta',1)}${H('faltaDesafio','Falta p/ desafio',1)}${H('desafio','Desafio',1)}${H('proj','Projeção/Mês',1)}<th class="r">% Proj.</th><th>Quartil</th><th>Boletim</th></tr></thead>
     <tbody>${rows}</tbody>
@@ -862,13 +863,15 @@ function bolRank(tipo) {
   if (tipo === 'ofe') { bolOfensores(); return; }
   if (tipo === 'top') {
     // Império: projeção de 100 vidas ou mais; equipes: projeção de 100% da meta ou mais. Ordem: vidas.
-    lista = ss.filter(s => imp ? s.proj >= 100 : s.meta > 0 && s.proj >= s.meta).sort((a, b) => b.total - a.total || b.proj - a.proj); titulo = 'TOP 100';
+    lista = ss.filter(s => imp ? s.proj >= 100 : s.meta > 0 && s.proj >= s.meta).sort((a, b) => b.total - a.total || b.proj - a.proj); titulo = imp ? 'TOP 100' : topNome(tid);
     sub = imp ? `${lista.length} promotores com projeção de 100 vidas ou mais no mês` : `${lista.length} promotores com projeção de 100% da meta ou mais`;
     cab = '<td><b>Promotor(a)</b></td><td><b>Equipe</b></td><td style="text-align:right"><b>Vidas</b></td><td style="text-align:right"><b>Projeção</b></td><td style="text-align:right"><b>Meta</b></td><td style="text-align:right"><b>% Meta</b></td>';
     linha = (s, i) => `<td>${i + 1}º ${esc(s.nome)}</td><td>${nomeEq(s)}</td><td style="text-align:right"><b>${s.total}</b></td><td style="text-align:right">${s.proj}</td><td style="text-align:right">${s.meta || '—'}</td><td style="text-align:right">${s.meta ? Math.round(s.proj / s.meta * 100) + '%' : '—'}</td>`;
     msg = lista.length ? `<p>🏆 ${esc(first(lista[0].nome))} lidera com ${lista[0].total} vidas (projeção de ${lista[0].proj}). Os ${lista.length} somam ${lista.reduce((a, s) => a + s.total, 0)} vidas.</p>` : '';
   } else if (tipo === 'semproj') {
-    lista = ss.filter(s => s.meta > 0 && s.proj < s.meta).sort((a, b) => a.proj - b.proj || b.meta - a.meta).slice(0, 10); titulo = 'Distantes da Meta'; sub = 'Os 10 com a menor projeção de vidas no mês (a menor em 1º)';
+    // nas equipes, quem já está em "Próximos da Meta" não se repete aqui (prioridade de Próximos da Meta)
+    const proximos = imp ? new Set() : new Set(ss.filter(s => s.meta > 0 && s.proj < s.meta).sort((a, b) => b.proj / b.meta - a.proj / a.meta).slice(0, 10).map(s => s.key));
+    lista = ss.filter(s => s.meta > 0 && s.proj < s.meta && !proximos.has(s.key)).sort((a, b) => a.proj - b.proj || b.meta - a.meta).slice(0, 10); titulo = 'Distantes da Meta'; sub = 'Os 10 com a menor projeção de vidas no mês (a menor em 1º)';
     cab = '<td><b>Promotor(a)</b></td><td><b>Equipe</b></td><td style="text-align:right"><b>Vidas</b></td><td style="text-align:right"><b>Projeção</b></td><td style="text-align:right"><b>Meta</b></td><td style="text-align:right"><b>Falta</b></td>';
     linha = (s, i) => `<td>${i + 1}º ${esc(s.nome)}</td><td>${nomeEq(s)}</td><td style="text-align:right">${s.total}</td><td style="text-align:right"><b>${s.proj}</b></td><td style="text-align:right">${s.meta}</td><td style="text-align:right">${s.faltaMeta}</td>`;
     msg = `<p>📉 "Falta" = vidas que faltam para a meta do mês. Juntos, faltam ${lista.reduce((a, s) => a + s.faltaMeta, 0)} vidas. Prioridade de acompanhamento e monitoria.</p>`;
@@ -1113,7 +1116,10 @@ document.addEventListener('click', e => {
   const tab = th.closest('table'); if (!tab || tab.id === 'rkTable') return;
   ordenarTabela(tab, th.cellIndex, th);
 });
-new MutationObserver(() => marcaCabecalhos(document)).observe(document.body, {childList: true, subtree: true});
+// botões do mesmo grupo com o mesmo tamanho: a largura do botão de maior texto
+function igualaBotoes(root) { root.querySelectorAll('.rk-btns').forEach(g => { const bs = [...g.querySelectorAll(':scope > .btn')]; if (bs.length < 2) return;
+  bs.forEach(b => b.style.width = ''); const w = Math.max(...bs.map(b => b.getBoundingClientRect().width)); if (w > 0) bs.forEach(b => b.style.width = Math.ceil(w) + 'px'); }); }
+new MutationObserver(() => { marcaCabecalhos(document); igualaBotoes(document); }).observe(document.body, {childList: true, subtree: true});
 
 const VIEWS = {ranking: viewRanking, home: viewHome, quartis: viewQuartis, sla: viewSla, qualidade: viewQualidade, pme: viewPme, zerados: viewZerados};
 function render() {
