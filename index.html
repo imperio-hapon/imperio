@@ -8,7 +8,11 @@ html{-webkit-text-size-adjust:100%}
 body{margin:0}
 img{max-width:100%}
 [hidden]{display:none!important}
-:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+/* todas as tabelas: colunas centralizadas, a primeira coluna à esquerda */
+table th,table td{text-align:center!important}
+table tr > th:first-child,table tr > td:first-child{text-align:left!important}
+</style>
 </head>
 <body>
 </head><body>
@@ -363,7 +367,8 @@ const nomeCurto = n => { const p = n.replace('*', '').trim().split(/\s+/); retur
 const IMPERIO = [...D.teams, ...D.extraTeams].map(t => t.id);
 const IMP_TEAM = { id: 'imperio', sup: 'Império', nome: 'Time Império' };
 const META_CONV = 10, META_QUAL = 85, META_SLA = 90, META_TEMPO = '6h';  // metas dos campos do Império
-const META_TEMPO_H = D.metaTempo || 6;  // tempo disponível = logado − almoço/banheiro (Overall Activity)
+const META_TEMPO_H = D.metaTempo || 6;
+const META_TEMPO_AMOSTRA = 4;  // card Tempo disponível do Império: % de promotores com média de só disponível ≥ 4h (o resto do card segue sobre 6h)  // tempo disponível = logado − almoço/banheiro (Overall Activity)
 const fmtH = h => { if (h == null || isNaN(h)) return '—'; let m = Math.round(h * 60); return Math.floor(m / 60) + 'h' + String(m % 60).padStart(2, '0'); };
 const tempoCls = h => h == null ? '' : h >= META_TEMPO_H ? 'good' : 'bad';
 const DD = (a, b) => { const p = s => { const m = /^(\d{2})\/(\d{2})/.exec(s || ''); return m ? new Date(+D.corte.slice(6), +m[2] - 1, +m[1]) : null; }; const x = p(a), y = p(b); return x && y ? (y - x) / 864e5 : null; };
@@ -837,7 +842,7 @@ function imperioKpis() {
     <div class="ikpi"><span class="t">Conversão</span><span class="v num ${cls(conv, META_CONV)}">${pct(conv)} <small>/ ${META_CONV}%</small></span><span class="pend">${fmt(V)} vidas em ${fmt(leads)} conversas (base analítica)</span></div>
     <div class="ikpi"><span class="t">Qualidade</span><span class="v num ${cls(qual, META_QUAL)}">${qual == null ? '—' : pct(qual, 0)} <small>/ ${META_QUAL}%</small></span><span class="pend">conformidade média de ${mon.length} monitorias</span></div>
     <div class="ikpi"><span class="t">SLA atendimento</span><span class="v num ${cls(sla, META_SLA)}">${pct(sla)} <small>/ ${META_SLA}%</small></span><span class="pend">atendidos em até 2 min · ${fmt(atend)} atendimentos</span></div>
-    ${(() => { const tt = teamTempo('imperio'); const op6 = D.sellers.filter(s => s.tempo && D.teams.some(t => t.id === s.team)); return `<div class="ikpi"><span class="t">Tempo disponível</span><span class="v num ${tempoCls(tt?.h2)}">${op6.length ? pct(op6.filter(s => s.tempo.h2 >= META_TEMPO_H).length / op6.length * 100, 0) : '—'}</span><small style="display:block;margin-top:2px">${op6.filter(s => s.tempo.h2 >= META_TEMPO_H).length} de ${op6.length} promotores atingem 6h</small>
+    ${(() => { const tt = teamTempo('imperio'); const op6 = D.sellers.filter(s => s.tempo && D.teams.some(t => t.id === s.team)); return `<div class="ikpi"><span class="t">Tempo disponível</span><span class="v num ${tt?.h2 == null ? '' : tt.h2 >= META_TEMPO_AMOSTRA ? 'good' : 'bad'}">${op6.length ? pct(op6.filter(s => s.tempo.h2 >= META_TEMPO_AMOSTRA).length / op6.length * 100, 0) : '—'}</span><small style="display:block;margin-top:2px">${op6.filter(s => s.tempo.h2 >= META_TEMPO_AMOSTRA).length} de ${op6.length} promotores atingem ${META_TEMPO_AMOSTRA}h</small>
       <div class="r2"><span><b>${tt ? pct(tt.h2 / META_TEMPO_H * 100, 0) : '—'}</b></span><span><b>${fmtH(tt?.h2)} / ${META_TEMPO_H}h</b></span></div><span class="pend">média por promotor(a), nos dias úteis trabalhados até ${D.tempoAte || D.d1}</span></div>`; })()}
   </div>`;
 }
