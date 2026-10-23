@@ -859,10 +859,12 @@ function bolRank(tipo) {
   if (tipo === 'pme') { bolPme(); return; }
   if (tipo === 'ofe') { bolOfensores(); return; }
   if (tipo === 'top') {
-    lista = ss.filter(s => s.meta > 0 && s.proj >= s.meta).sort((a, b) => b.total - a.total || b.proj / b.meta - a.proj / a.meta); titulo = 'TOP 100'; sub = `${lista.length} promotores com projeção de 100% da meta ou mais (até ${D.d1})`;
+    // Império: projeção de 100 vidas ou mais; equipes: projeção de 100% da meta ou mais. Ordem: vidas.
+    lista = ss.filter(s => imp ? s.proj >= 100 : s.meta > 0 && s.proj >= s.meta).sort((a, b) => b.total - a.total || b.proj - a.proj); titulo = 'TOP 100';
+    sub = imp ? `${lista.length} promotores com projeção de 100 vidas ou mais no mês` : `${lista.length} promotores com projeção de 100% da meta ou mais`;
     cab = '<td><b>Promotor(a)</b></td><td><b>Equipe</b></td><td style="text-align:right"><b>Vidas</b></td><td style="text-align:right"><b>Projeção</b></td><td style="text-align:right"><b>Meta</b></td><td style="text-align:right"><b>% Meta</b></td>';
     linha = (s, i) => `<td>${i + 1}º ${esc(s.nome)}</td><td>${nomeEq(s)}</td><td style="text-align:right"><b>${s.total}</b></td><td style="text-align:right">${s.proj}</td><td style="text-align:right">${s.meta || '—'}</td><td style="text-align:right">${s.meta ? Math.round(s.proj / s.meta * 100) + '%' : '—'}</td>`;
-    msg = lista.length ? `<p>🏆 ${esc(first(lista[0].nome))} lidera com ${lista[0].total} vidas (${Math.round(lista[0].proj / lista[0].meta * 100)}% da meta na projeção). Os ${lista.length} somam ${lista.reduce((a, s) => a + s.total, 0)} vidas.</p>` : '';
+    msg = lista.length ? `<p>🏆 ${esc(first(lista[0].nome))} lidera com ${lista[0].total} vidas (projeção de ${lista[0].proj}). Os ${lista.length} somam ${lista.reduce((a, s) => a + s.total, 0)} vidas.</p>` : '';
   } else if (tipo === 'semproj') {
     lista = ss.filter(s => s.meta > 0 && s.proj < s.meta).sort((a, b) => a.proj - b.proj || b.meta - a.meta).slice(0, 10); titulo = 'Distantes da Meta'; sub = 'Os 10 com a menor projeção de vidas no mês (a menor em 1º)';
     cab = '<td><b>Promotor(a)</b></td><td><b>Equipe</b></td><td style="text-align:right"><b>Vidas</b></td><td style="text-align:right"><b>Projeção</b></td><td style="text-align:right"><b>Meta</b></td><td style="text-align:right"><b>Falta</b></td>';
