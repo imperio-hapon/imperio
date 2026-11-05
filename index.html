@@ -321,8 +321,9 @@ table th.col-prom,table td.col-prom{text-align:left!important}
 .zleg{margin-top:14px;padding-top:10px;border-top:1px solid var(--line);font-size:12.5px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .zleg .zchip{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:600}
 /* linha própria de botões do Império, acima do Comparativo de gestões, ocupando a largura toda (30/10) */
-.imp-btns{display:flex!important;flex-wrap:wrap;gap:8px;margin:0 0 16px}
-.imp-btns .btn{width:auto!important;flex:1 1 auto;justify-content:center;text-align:center;white-space:nowrap}
+.imp-btns{display:flex!important;flex-direction:column;align-items:center;gap:8px;margin:0 0 16px}
+.imp-btns .imp-linha{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:100%}
+.imp-btns .btn{flex:0 0 auto;justify-content:center;text-align:center;white-space:nowrap}
 /* Campanha Estrelas (30/10) */
 .estrelas{color:#E0A400;letter-spacing:1px;white-space:nowrap}
 .bcard .estrelas{color:var(--b-gold)}
@@ -647,7 +648,7 @@ function viewRanking() {
   const divs = D.diverg.length ? `<p class="hint">Conferência: os totais seguem a aba ${D.rankingAba}. Diferença com a base bruta: ${D.diverg.map(x => esc(x[0]) + ' ranking ' + esc(x[1]) + ' x base ' + esc(x[2])).join('; ')} (PF, Adesão, PME — o ranking conta adesões canceladas).</p>` : '';
   return `
   <div class="card">
-    <div class="rk-head"><h2>Ranking ${D.mes} — ${esc(teamById(t).nome)}</h2>${imp ? '' : '<div class="rk-btns"><button class="btn pri" data-bolteam="1">Equipe</button><button class="btn pri" data-bolrank="top">' + esc(topNome(t)) + '</button><button class="btn pri" data-bolrank="proj">Próximos da Meta</button><button class="btn pri" data-bolrank="semproj">Distantes da Meta</button></div>'}</div>
+    <div class="rk-head"><h2>Ranking ${D.mes} — ${esc(teamById(t).nome)}</h2>${imp ? '<div class="rk-btns"><button class="btn pri" data-rkxlsx="1">Baixar .xlsx</button></div>' : '<div class="rk-btns"><button class="btn pri" data-bolteam="1">Equipe</button><button class="btn pri" data-bolrank="top">' + esc(topNome(t)) + '</button><button class="btn pri" data-bolrank="proj">Próximos da Meta</button><button class="btn pri" data-bolrank="semproj">Distantes da Meta</button></div>'}</div>
     <p class="hint">${imp ? '' : `<b>${esc(teamById(t).cargo)} ${esc(teamById(t).sup)}</b> · `}${fmt(T)} vidas de ${fmt(meta)} (meta) · desafio ${fmt(des)} · ${ss.filter(s => s.total > 0).length} de ${ss.length} já produzindo · dia ${ontem}: +${ontemTot}${dest && dest.daily[dIdx] ? ` (destaque ${esc(dest.nome)}, +${dest.daily[dIdx]})` : ''} · líder: ${esc(lider.nome)} (${lider.total}). Clique no nome para ver cancelamentos, produtos e pontos de gestão.</p>
     <div class="tbl"><table id="rkTable"><thead><tr><th>#</th><th>Quartil</th>${H('nome','Promotor(a)')}${imp ? '<th>Equipe</th>' : ''}${H('pf','PF',1)}${H('pme','PME',1)}${H('ad','Adesão',1)}${H('total','Total',1)}${H('faltaMeta','Falta p/ meta',1)}${H('meta','Meta',1)}${H('pctProj','% Proj. Meta',1)}${H('faltaDesafio','Falta p/ desafio',1)}${H('desafio','Desafio',1)}<th>Boletim</th></tr></thead>
     <tbody>${rows}</tbody>
@@ -1090,7 +1091,7 @@ function eqRow(nome, sup, v, m) {
 function gestoesHtml() {
   const g = D.gestoes; const days = g[0].dias.length;
   const impSs = teamSellers('imperio'); const impM = impSs.reduce((a, s) => a + s.meta, 0), impV = impSs.reduce((a, s) => a + s.total, 0);
-  return `<div class="rk-btns imp-btns"><button class="btn pri" data-bolhc="1">HC MVP</button><button class="btn pri" data-bolsem="1">Semanal</button><button class="btn pri" data-bolrank="top">TOP 100</button><button class="btn pri" data-bolrank="pme">TOP 16 PME</button><button class="btn pri" data-bolppo="1">PPO</button><button class="btn pri" data-bolmdia="1">Meta diária</button><button class="btn pri" data-bolrange="1">Range de Vidas</button><button class="btn pri" data-bolrank="proj">Próximos da Meta</button><button class="btn pri" data-bolrank="semproj">Distantes da Meta</button><button class="btn pri" data-bolrank="ofe">Ofensores</button><button class="btn pri" data-bolzer="1">Zerados</button><button class="btn pri" data-bolmimp="1">Monitoria</button><button class="btn pri" data-bolestimp="1">Estrelas</button></div>
+  return `<div class="rk-btns imp-btns"><div class="imp-linha"><button class="btn pri" data-bolhc="1">HC MVP</button><button class="btn pri" data-bolsem="1">Semanal</button><button class="btn pri" data-bolrank="top">TOP 100</button><button class="btn pri" data-bolrank="pme">TOP 16 PME</button><button class="btn pri" data-bolppo="1">PPO</button><button class="btn pri" data-bolmdia="1">Meta diária</button><button class="btn pri" data-bolrange="1">Range de Vidas</button></div><div class="imp-linha"><button class="btn pri" data-bolrank="proj">Próximos da Meta</button><button class="btn pri" data-bolrank="semproj">Distantes da Meta</button><button class="btn pri" data-bolrank="ofe">Ofensores</button><button class="btn pri" data-bolzer="1">Zerados</button><button class="btn pri" data-bolmimp="1">Monitoria</button><button class="btn pri" data-bolestimp="1">Estrelas</button></div></div>
   <div class="card"><h2>Comparativo de gestões — ${D.mesl}</h2>
     <p class="hint">Fonte: aba ${D.resumoAba} do levantamento de ${D.corte.slice(0,5)}. Vidas por dia de cadastramento: entram todas as vendas confirmadas de ${D.mesl}, inclusive com data de hoje ou futura. A coluna de ${D.mesAntAbrev}. compara com o mês anterior até o dia ${D1d}. A meta da Josy é a soma das metas individuais do ${D.desNome} (${fmt(D.desTotal)}); o levantamento traz ${fmt(g[0].metaLev)}. Projeção = Total ÷ ${D.duDec} dias úteis decorridos × ${D.duMes} dias úteis do mês (verde quando alcança a meta). % meta = Projeção (mês) ÷ Meta.</p>
     <div class="tbl"><table class="gtab"><colgroup><col style="width:140px">${'<col>'.repeat(10)}</colgroup><thead><tr><th>Gestão</th><th class="r">PF</th><th class="r">PME</th><th class="r">Adesão</th><th class="r">ActionLine</th><th class="r">Total</th><th class="r">Projeção (mês)</th><th class="r">% meta</th><th class="r">Meta</th><th class="r">${D.mesAntAbrev}. até dia ${parseInt(D.d1)}</th><th class="r">Var.</th></tr></thead><tbody>
@@ -1852,6 +1853,23 @@ function bolPme(eqSel = '') {
     <div class="msg"><p>🏢 A gestão Josy ocupa <b>${josy.length} das 16 vagas</b>, com ${somaJosy} vidas PME somadas${josy[0] ? `; ${esc(first(josy[0].nome))} é a melhor colocada (${josy[0].pos}º, ${josy[0].pme} vidas)` : ''}.</p></div>`, 'TOP 16 PME', 'imperio');
   ligaSelEq('pmeEq', bolPme);
 }
+// Baixar .xlsx do Ranking do Time Império (pedido de 05/11): a tabela como está na tela (mesma ordem), sem a coluna Boletim
+async function baixarRanking(btn) {
+  if (!window.XLSX) { btn.textContent = 'Download indisponível'; return; }
+  const tb = document.getElementById('rkTable'); if (!tb) return;
+  const cab = [...tb.tHead.rows[0].cells].map(c => c.textContent.replace(/[▾▴]/g, '').trim()); const ib = cab.indexOf('Boletim');
+  const val = t => { t = t.trim(); if (/^-?[\d.]+$/.test(t)) return +t.replace(/\./g, ''); if (/^-?[\d.]+,\d+$/.test(t)) return +t.replace(/\./g, '').replace(',', '.'); const p = /^(-?[\d.,]+)%$/.exec(t); if (p) return {v: +p[1].replace(/\./g, '').replace(',', '.') / 100, z: '0%'}; return t; };
+  const linhas = [...tb.tBodies[0].rows].map(r => [...r.cells].map(c => c.textContent.replace(/\s+/g, ' ').trim()));
+  const aoa = [cab.filter((_, i) => i !== ib), ...linhas.map(l => l.filter((_, i) => i !== ib).map(val))];
+  const ws = XLSX.utils.aoa_to_sheet(aoa.map(l => l.map(x => x && typeof x === 'object' ? x.v : x)));
+  aoa.forEach((l, r) => l.forEach((x, c) => { if (x && typeof x === 'object') { const cel = ws[XLSX.utils.encode_cell({r, c})]; if (cel) cel.z = x.z; } }));
+  ws['!cols'] = aoa[0].map((h, i) => ({wch: i === 2 ? 30 : Math.max(10, h.length + 2)}));
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Ranking ' + D.mes);
+  const nome = `Ranking-${D.mes}-Time-Imperio-ate-${D.d1.replace('/', '-')}.xlsx`;
+  const dl = window.claude?.use ? await window.claude.use('downloads') : null;
+  if (dl) { try { await dl.save({filename: nome, data: XLSX.write(wb, {bookType: 'xlsx', type: 'array'})}); } catch (e) { if (e && e.code !== 'declined') btn.textContent = 'Download indisponível'; } }
+  else XLSX.writeFile(wb, nome);
+}
 async function baixarSla() {
   if (!window.XLSX) { alertMsg('Não foi possível gerar a planilha agora. Recarregue a página e tente de novo.'); return; }
   const hDia = h => Math.round(h * 60) / 1440;  // horas -> fração de dia do Excel, arredondada ao minuto como na tabela (ex.: 10h23)
@@ -1898,6 +1916,7 @@ function bindActions(root) {
   root.querySelectorAll('[data-bolteam]').forEach(b => b.onclick = () => bolTeam());
   root.querySelectorAll('[data-bolrank]').forEach(b => b.onclick = () => bolRank(b.dataset.bolrank));
   root.querySelectorAll('[data-xlsx]').forEach(b => b.onclick = () => baixarSla());
+  root.querySelectorAll('[data-rkxlsx]').forEach(b => b.onclick = () => baixarRanking(b));
   root.querySelectorAll('[data-bolmoni]').forEach(b => b.onclick = () => bolMoni());
   root.querySelectorAll('[data-bolmonit]').forEach(b => b.onclick = () => bolMonitorias(+b.dataset.bolmonit));
   root.querySelectorAll('[data-bolabs]').forEach(b => b.onclick = () => bolAbsent());
@@ -1934,7 +1953,7 @@ document.addEventListener('click', e => {
   ordenarTabela(tab, th.cellIndex, th);
 });
 // botões do mesmo grupo com o mesmo tamanho: a largura do botão de maior texto
-function igualaBotoes(root) { root.querySelectorAll('.rk-btns').forEach(g => { const bs = [...g.querySelectorAll(':scope > .btn')]; if (bs.length < 2) return;
+function igualaBotoes(root) { root.querySelectorAll('.rk-btns').forEach(g => { const bs = [...g.querySelectorAll(g.classList.contains('imp-btns') ? '.btn' : ':scope > .btn')]; if (bs.length < 2) return;
   bs.forEach(b => b.style.width = ''); const w = Math.max(...bs.map(b => b.getBoundingClientRect().width)); if (w > 0) bs.forEach(b => b.style.width = Math.ceil(w) + 'px'); }); }
 // coluna cujo cabeçalho é "Promotor(a)": conteúdo à esquerda (só essa coluna; as outras seguem centralizadas)
 function alinhaPromotor(root) { root.querySelectorAll('table').forEach(tb => { const cab = tb.tHead ? tb.tHead.rows[tb.tHead.rows.length - 1] : tb.rows[0]; if (!cab) return;
