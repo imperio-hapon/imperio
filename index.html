@@ -1038,9 +1038,11 @@ async function baixarFilas(btn, tid) {
   const QS = ['Q1', 'Q2', 'Q3', 'Q4'], F = FILAS;
   const ss = teamSellers(tid).filter(s => s.meta > 0 || F.prom[s.key]).map(s => ({s, x: F.prom[s.key] || {}}))
     .sort((a, b) => (QS.includes(a.x.q) ? QS.indexOf(a.x.q) : 9) - (QS.includes(b.x.q) ? QS.indexOf(b.x.q) : 9) || a.s.nome.localeCompare(b.s.nome));
-  const rows = ss.map(({s, x}) => ({'Promotor(a)': s.nome, 'Quartil': QS.includes(x.q) ? x.q : 'sem quartil', 'Filas': [...(QS.includes(x.q) ? F.filas[x.q] : []), ...(x.pme ? F.filas.PME : [])].map(f => f[1]).join('; ')}));
+  // 17/11: uma linha por promotor(a) e fila, com filtro no cabeçalho (filtrar a coluna Fila mostra quem está nela)
+  const rows = ss.flatMap(({s, x}) => { const q = QS.includes(x.q) ? x.q : 'sem quartil'; const fs = [...(QS.includes(x.q) ? F.filas[x.q] : []), ...(x.pme ? F.filas.PME : [])];
+    return fs.length ? fs.map(f => ({'Promotor(a)': s.nome, 'Quartil': q, 'Fila': f[1]})) : [{'Promotor(a)': s.nome, 'Quartil': q, 'Fila': ''}]; });
   const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{'Promotor(a)': 'Sem promotores'}]);
-  ws['!cols'] = [{wch: 26}, {wch: 12}, {wch: 160}];
+  ws['!cols'] = [{wch: 26}, {wch: 12}, {wch: 34}]; if (rows.length) ws['!autofilter'] = {ref: ws['!ref']};
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Filas');
   const nomeEq = (teamById(tid)?.nome || tid).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '-');
   await salvaXlsx(btn, wb, `Filas-${nomeEq}-quartil-${String(F.ref).slice(0, 5).replace('/', '-')}.xlsx`);
