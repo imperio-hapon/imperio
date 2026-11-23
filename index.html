@@ -384,7 +384,7 @@ table thead th.fer{color:#6cc4ff!important}
 .bcard .md-novo{display:inline-block;font-size:11px;font-weight:700;background:var(--b-gold);color:#012;border-radius:8px;padding:0 6px;margin-left:4px}
 
 /* abas Página Inicial · Orçamentos da página Império (08/11): 50% cada, nomes centralizados */
-.imp-abas{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 16px}
+.imp-abas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:0 0 16px}
 .imp-aba{border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:6px 16px;border-radius:10px;text-align:center;font-family:var(--font-body);font-size:18px;font-weight:700;line-height:1.45;width:100%}  /* mesma fonte do título "Comparativo de gestões" (08/11) */
 .imp-aba[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:inset 0 -3px 0 var(--gold)}
 .orc-frame{display:block;width:100%;min-height:900px;border:0;background:transparent}
@@ -401,6 +401,10 @@ table thead th.fer{color:#6cc4ff!important}
 /* Boletim de vendas (Ranking) e Boletim de quartil (Quartis) um pouco mais estreitos (09/11) */
 .bcard.bol-prom{width:min(484px,100%)}
 .bcard.emb-luiz.bol-prom{width:min(576px,100%)}
+/* Conversão por Origem (mês), aba Filas e Tags (23/11) */
+[data-coxlsx]{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;background:#014282!important;border-color:#014282!important;color:#fff!important}
+[data-coxlsx]::before{content:"";flex:none;width:16px;height:16px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAACLUlEQVR42u2Yy2sTURSHv5M0SafBJOahVSraWEERRTciirQIClL/Al24E0WXjSBk48KF6F66FQRXooviG7TiJhsRQVtbfJVIk9DUNE3SPJrrQirBNopJm5nI/ZaHey6/35xz5s4d0Gg0GjORRhNf5KbPKeSaIJ5WCFWoOcF2qd8dGl4VA89ziUyrxNfYyPS7N/pqI7bGS9dq8QDi/T1ia/cZ0Aa0AW2gzelYKRhNvbsKDIngrJcYjcfqPxURtnR66TX8plXgj+L/RlUpvhYy5rVQM+Jrjn49Aw3PwLJFIlzwhgnYnTzKJ3hVSAPQ7TC4vXWAKoozX0b5Vs5b8y1UUYrH+SQAR4wgLvmZdjawE4fYuJWeNEX8P7XQ+1KWifI8XWLnYKefPpeHo+s2MVXKcWf2o7VbaImHuSRhn5tDhp9QaDeCcCP5lrKqtsdBllosEluYxRA7ew0/T7JxXhdmrD/EtSz1P0AqG+flxEj9xTsGrVWBXkcX+10+pioFRtOTnN58gOPBXe3xLdQhwkl3NwI8zSeJjN1FoRjecwq33Wl9AwNGkJDdxYfSPJ/KeWLfP3Nv+g3bjADRvhPWNrDB7uKwEUABzwqpX/HL4/epqCpD4WPs8/RYd4iTi0WuzIwti4/nEjgeXNT3gTUwoIpNbyw28wwoJdeVotSM+J712639a5GR88qUnhm8KfpSrw1oA9rA/2BAqbmWq1VkVrECEllpwzUVLxJBo9FoLMUPrSWgHcK2Xt0AAAAASUVORK5CYII=) center/contain no-repeat}
+.co-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.co-grid>*{min-width:0}.co-tit{font-family:var(--font-display);font-size:15px;margin:6px 0 8px}.co-t td:first-child{white-space:normal}@media (max-width:900px){.co-grid{grid-template-columns:1fr}}
 /* Tags de Encerramento (aba Tags e Orçamentos, 12/11) */
 .tags-sel{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-weight:600}
 .tags-sel select{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
@@ -2145,10 +2149,50 @@ async function baixarSla() {
 }
 function alertMsg(t) { const b = document.querySelector('[data-xlsx]'); if (b) { b.textContent = t.length > 30 ? 'Download indisponível' : t; b.title = t; } }
 function viewImperio() {  // abas Página Inicial · Orçamentos logo abaixo das 2 linhas de botões (08/11)
-  const g = gestoesHtml(), k = g.indexOf('<div class="card"><h2>Comparativo'); let aba = 0; try { aba = localStorage.getItem('painelImpAba') === '1' ? 1 : 0; } catch (e) {}
-  return imperioKpis() + g.slice(0, k) + `<div class="imp-abas" role="tablist"><button class="imp-aba" role="tab" data-impaba="0" aria-selected="${aba === 0}">Página Inicial</button><button class="imp-aba" role="tab" data-impaba="1" aria-selected="${aba === 1}">Tags e Orçamentos</button></div>`
-    + `<div class="imp-pane" data-imppane="0"${aba === 0 ? '' : ' hidden'}>` + g.slice(k) + viewRanking() + `</div><div class="imp-pane" data-imppane="1"${aba === 1 ? '' : ' hidden'}>` + tagsCard() + `<h2 class="orc-tit">Orçamentos</h2><iframe class="orc-frame" id="orcFrame" title="Orçamentos (Gestão On-line)"></iframe></div>`;
+  const g = gestoesHtml(), k = g.indexOf('<div class="card"><h2>Comparativo'); let aba = 0; try { const a = localStorage.getItem('painelImpAba'); aba = a === '1' ? 1 : a === '2' ? 2 : 0; } catch (e) {}  // 23/11: 0 Página Inicial · 2 Orçamentos · 1 Filas e Tags
+  return imperioKpis() + g.slice(0, k) + `<div class="imp-abas" role="tablist"><button class="imp-aba" role="tab" data-impaba="0" aria-selected="${aba === 0}">Página Inicial</button><button class="imp-aba" role="tab" data-impaba="2" aria-selected="${aba === 2}">Orçamentos</button><button class="imp-aba" role="tab" data-impaba="1" aria-selected="${aba === 1}">Filas e Tags</button></div>`
+    + `<div class="imp-pane" data-imppane="0"${aba === 0 ? '' : ' hidden'}>` + g.slice(k) + viewRanking() + `</div><div class="imp-pane" data-imppane="1"${aba === 1 ? '' : ' hidden'}>` + convOrigemCard() + tagsCard() + `</div><div class="imp-pane" data-imppane="2"${aba === 2 ? '' : ' hidden'}><h2 class="orc-tit">Orçamentos</h2><iframe class="orc-frame" id="orcFrame" title="Orçamentos (Gestão On-line)"></iframe></div>`;
 }
+// ---------- Conversão por Origem (mês) — aba Filas, Tags e Orçamentos (23/11): origem = Session Team do GUP (fila), leads = conversas da base analítica
+// (um lead por celular), vidas = vendas do mês ligadas pelo ID_SESSAO; conversão = vidas ÷ leads (mesma regra do painel). Só origens com 100+ leads.
+function convOrigemCard() {
+  const ids = new Set(D.teams.map(t => t.id)); const L = {}, V = {};
+  D.sellers.filter(s => ids.has(s.team) && s.lead && s.lead.orig).forEach(s => s.lead.orig.forEach(o => { L[o.o] = (L[o.o] || 0) + (o.leads || 0); V[o.o] = (V[o.o] || 0) + (o.vidas || 0); }));
+  const MIN = 100; const todas = Object.keys(L).filter(o => o !== 'Sem sessão no GUP');
+  const semOrig = convSemOrigem(L, V);
+  const ok = todas.filter(o => L[o] >= MIN).map(o => ({o, l: L[o], v: V[o], c: V[o] / L[o] * 100}));
+  if (!ok.length) return `<div class="card" id="convOrigemCard"><h2>Conversão por Origem (mês)</h2><p class="muted">Sem dados de origem neste mês (envie o GUP e a base analítica).</p></div>`;
+  const desc = [...ok].sort((a, b) => b.c - a.c || b.l - a.l), n = Math.min(10, Math.ceil(ok.length / 2));
+  const maior = desc.slice(0, n), menor = [...ok].sort((a, b) => a.c - b.c || b.l - a.l).filter(x => !maior.includes(x)).slice(0, n);
+  const tL = todas.reduce((a, o) => a + L[o], 0), tV = todas.reduce((a, o) => a + V[o], 0), cg = tL ? tV / tL * 100 : null;
+  const pill = c => `<span class="pill ${c >= META_CONV ? 'p-good' : c >= META_CONV * 0.7 ? 'p-warn' : 'p-bad'}">${pct(c)}</span>`;
+  const tab = (tit, arr) => `<div><h3 class="co-tit">${tit}</h3><div class="tbl"><table class="co-t"><thead><tr><th>Origem</th><th class="r">Total de leads</th><th class="r">Vidas</th><th class="r">Conversão</th></tr></thead><tbody>
+    ${arr.map(x => `<tr><td>${esc(x.o)}</td><td class="r num">${fmt(x.l)}</td><td class="r num">${fmt(x.v)}</td><td class="r">${pill(x.c)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  const fora = todas.length - ok.length;
+  return `<div class="card" id="convOrigemCard"><div class="rk-head"><h2>Conversão por Origem (mês)</h2><button class="btn pri" data-coxlsx="1">Baixar .xlsx</button></div><p class="hint">Time Império, de 01/${D.mm} até ${D.slaAte || D.d1}. Origem = fila de entrada do lead (Session Team do GUP). Total de leads = conversas da base analítica nessa origem (um lead por celular); Vidas = vendas do mês ligadas à conversa pelo ID_SESSAO; Conversão = vidas ÷ leads (meta ${META_CONV}%). Só origens com ${MIN}+ leads${fora ? ` (${fora} origens menores ficam de fora)` : ''}. Geral: ${fmt(tL)} leads, ${fmt(tV)} vidas com origem, ${pct(cg)} de conversão. Vidas do LEVANTAMENTOVENDAS sem origem identificada (sem ID_SESSAO ou sessão fora do GUP): ${fmt(semOrig)}. O Baixar .xlsx traz todas as origens, sem corte.</p>
+    <div class="co-grid">${tab('▲ Maior conversão', maior)}${tab('▼ Menor conversão', menor)}</div></div>`;
+}
+// vidas do LEVANTAMENTOVENDAS do mês (Time Império) que não têm origem: venda sem ID_SESSAO, sessão fora do GUP ou promotor(a) sem conversas
+function convSemOrigem(L, V) { const ids = new Set(D.teams.map(t => t.id)); const tot = D.sellers.filter(s => ids.has(s.team)).reduce((a, s) => a + (s.total || 0), 0);
+  const lig = Object.keys(V).filter(o => o !== 'Sem sessão no GUP').reduce((a, o) => a + V[o], 0); return Math.max(0, tot - lig); }
+// Baixar .xlsx da Conversão por Origem (23/11): todas as origens, sem corte de leads, + a linha das vidas sem origem e o total
+async function baixarConvOrigem(btn) {
+  if (!window.XLSX) { btn.textContent = 'Download indisponível'; return; }
+  const ids = new Set(D.teams.map(t => t.id)); const L = {}, V = {};
+  D.sellers.filter(s => ids.has(s.team) && s.lead && s.lead.orig).forEach(s => s.lead.orig.forEach(o => { L[o.o] = (L[o.o] || 0) + (o.leads || 0); V[o.o] = (V[o.o] || 0) + (o.vidas || 0); }));
+  const todas = Object.keys(L).filter(o => o !== 'Sem sessão no GUP').sort((a, b) => (L[b] ? V[b] / L[b] : 0) - (L[a] ? V[a] / L[a] : 0) || L[b] - L[a]);
+  const lin = (o, l, v) => ({'Origem': o, 'Total de leads': l, 'Vidas': v, 'Conversão': l ? v / l : null});
+  const rows = todas.map(o => lin(o, L[o], V[o])); const semOrig = convSemOrigem(L, V);
+  rows.push(lin('Sem origem identificada (venda sem ID_SESSAO ou sessão fora do GUP)', 0, semOrig));
+  const tL = todas.reduce((a, o) => a + L[o], 0), tV = todas.reduce((a, o) => a + V[o], 0);
+  rows.push(lin('Total', tL, tV + semOrig));
+  const ws = XLSX.utils.json_to_sheet(rows); const rg = XLSX.utils.decode_range(ws['!ref']);
+  for (let R = 1; R <= rg.e.r; R++) { const c = ws[XLSX.utils.encode_cell({r: R, c: 3})]; if (c && c.t === 'n') c.z = '0.0%'; }
+  ws['!cols'] = [{wch: 62}, {wch: 15}, {wch: 10}, {wch: 12}]; ws['!autofilter'] = {ref: XLSX.utils.encode_range({s: {r: 0, c: 0}, e: {r: rows.length - 2, c: 3}})};
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Conversão por Origem');
+  await salvaXlsx(btn, wb, `Conversao-por-Origem-Imperio-${D.mes}-ate-${(D.slaAte || D.d1).replace('/', '-')}.xlsx`);
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-coxlsx]'); if (b) baixarConvOrigem(b); });
 // ---------- Tags de Encerramento (aba Tags e Orçamentos da página Império, 12/11): GUP, coluna Tag de encerramento, dia a dia + acumulado do mês
 function tagsSel() { let v = 'todas'; try { v = localStorage.getItem('painelTagsEq') || 'todas'; } catch (e) {} return v === 'todas' || D.teams.some(t => t.id === v) ? v : 'todas'; }
 function tagsBase(eq) {
@@ -2386,9 +2430,9 @@ document.addEventListener('click', e => {
   const a = b.dataset.impaba; try { localStorage.setItem('painelImpAba', a); } catch (err) {}
   document.querySelectorAll('[data-impaba]').forEach(x => x.setAttribute('aria-selected', String(x.dataset.impaba === a)));
   document.querySelectorAll('[data-imppane]').forEach(p => { p.hidden = p.dataset.imppane !== a; });
-  if (a === '1') orcCarrega();
+  if (a === '2') orcCarrega();
 });
-new MutationObserver(() => { const p = document.querySelector('[data-imppane="1"]'); if (p && !p.hidden) orcCarrega(); }).observe(document.documentElement, {childList: true, subtree: true});
+new MutationObserver(() => { const p = document.querySelector('[data-imppane="2"]'); if (p && !p.hidden) orcCarrega(); }).observe(document.documentElement, {childList: true, subtree: true});
 
 // ---------- wiring ----------
 function bindLayer() {
