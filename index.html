@@ -2090,6 +2090,15 @@ async function baixarRanking(btn) {
   aoa.forEach((l, r) => l.forEach((x, c) => { if (x && typeof x === 'object') { const cel = ws[XLSX.utils.encode_cell({r, c})]; if (cel) cel.z = x.z; } }));
   ws['!cols'] = aoa[0].map((h, i) => ({wch: i === 2 ? 30 : Math.max(10, h.length + 2)}));
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Ranking ' + D.mes);
+  // 23/11: abas Vidas PF, Vidas PME e Vidas Adesão com as vendas do mês de todos os promotores do Time Império (mesmas linhas do Baixar .xlsx do promotor(a))
+  { const ids = new Set(D.teams.map(t => t.id));
+    const ss = D.sellers.filter(s => ids.has(s.team)).slice().sort((a, b) => (teamById(a.team)?.nome || '').localeCompare(teamById(b.team)?.nome || '') || a.nome.replace('*', '').localeCompare(b.nome.replace('*', '')));
+    const todas = ss.flatMap(s => linhasVendas(s).map(r => ({'Promotor(a)': s.nome.replace('*', ''), 'Equipe': teamById(s.team)?.nome || '', 'Supervisor(a)': teamById(s.team)?.sup || '', ...r})));
+    [['PF', r => r.Produto === 'PF'], ['PME', r => r.Produto === 'PME'], ['Adesão', r => r.Produto.startsWith('Adesão')]].forEach(([aba, f]) => {
+      const rows = todas.filter(f);
+      const w = XLSX.utils.json_to_sheet(rows.length ? rows : [{'Promotor(a)': 'Sem vendas ' + aba + ' no mês'}]);
+      w['!cols'] = [{wch: 24}, {wch: 20}, {wch: 18}, ...COLS_VENDAS]; if (rows.length) w['!autofilter'] = {ref: w['!ref']};
+      XLSX.utils.book_append_sheet(wb, w, 'Vidas ' + aba); }); }
   const nome = `Ranking-${D.mes}-Time-Imperio-ate-${D.d1.replace('/', '-')}.xlsx`;
   const dl = window.claude?.use ? await window.claude.use('downloads') : null;
   if (dl) { try { await dl.save({filename: nome, data: XLSX.write(wb, {bookType: 'xlsx', type: 'array'})}); } catch (e) { if (e && e.code !== 'declined') btn.textContent = 'Download indisponível'; } }
