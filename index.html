@@ -401,6 +401,11 @@ table thead th.fer{color:#6cc4ff!important}
 /* Boletim de vendas (Ranking) e Boletim de quartil (Quartis) um pouco mais estreitos (09/11) */
 .bcard.bol-prom{width:min(484px,100%)}
 .bcard.emb-luiz.bol-prom{width:min(576px,100%)}
+/* 24/11: botões Baixar .xlsx dos cartões HC MVP, Semanal, Range de Vidas, Zerados e Meta diária */
+.xls-btn{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;background:#014282!important;border-color:#014282!important;color:#fff!important;font-family:var(--font-body)}
+.xls-btn::before{content:"";flex:none;width:16px;height:16px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAACLUlEQVR42u2Yy2sTURSHv5M0SafBJOahVSraWEERRTciirQIClL/Al24E0WXjSBk48KF6F66FQRXooviG7TiJhsRQVtbfJVIk9DUNE3SPJrrQirBNopJm5nI/ZaHey6/35xz5s4d0Gg0GjORRhNf5KbPKeSaIJ5WCFWoOcF2qd8dGl4VA89ziUyrxNfYyPS7N/pqI7bGS9dq8QDi/T1ia/cZ0Aa0AW2gzelYKRhNvbsKDIngrJcYjcfqPxURtnR66TX8plXgj+L/RlUpvhYy5rVQM+Jrjn49Aw3PwLJFIlzwhgnYnTzKJ3hVSAPQ7TC4vXWAKoozX0b5Vs5b8y1UUYrH+SQAR4wgLvmZdjawE4fYuJWeNEX8P7XQ+1KWifI8XWLnYKefPpeHo+s2MVXKcWf2o7VbaImHuSRhn5tDhp9QaDeCcCP5lrKqtsdBllosEluYxRA7ew0/T7JxXhdmrD/EtSz1P0AqG+flxEj9xTsGrVWBXkcX+10+pioFRtOTnN58gOPBXe3xLdQhwkl3NwI8zSeJjN1FoRjecwq33Wl9AwNGkJDdxYfSPJ/KeWLfP3Nv+g3bjADRvhPWNrDB7uKwEUABzwqpX/HL4/epqCpD4WPs8/RYd4iTi0WuzIwti4/nEjgeXNT3gTUwoIpNbyw28wwoJdeVotSM+J712639a5GR88qUnhm8KfpSrw1oA9rA/2BAqbmWq1VkVrECEllpwzUVLxJBo9FoLMUPrSWgHcK2Xt0AAAAASUVORK5CYII=) center/contain no-repeat}
+.bcard .ctabs .xls-btn{margin-left:auto;align-self:center;margin-bottom:4px}
+.bcard .zer-xlsx{display:flex;justify-content:flex-end;margin-top:10px}
 /* Conversão por Origem (mês), aba Filas e Tags (23/11) */
 [data-coxlsx]{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;background:#014282!important;border-color:#014282!important;color:#fff!important}
 [data-coxlsx]::before{content:"";flex:none;width:16px;height:16px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAACLUlEQVR42u2Yy2sTURSHv5M0SafBJOahVSraWEERRTciirQIClL/Al24E0WXjSBk48KF6F66FQRXooviG7TiJhsRQVtbfJVIk9DUNE3SPJrrQirBNopJm5nI/ZaHey6/35xz5s4d0Gg0GjORRhNf5KbPKeSaIJ5WCFWoOcF2qd8dGl4VA89ziUyrxNfYyPS7N/pqI7bGS9dq8QDi/T1ia/cZ0Aa0AW2gzelYKRhNvbsKDIngrJcYjcfqPxURtnR66TX8plXgj+L/RlUpvhYy5rVQM+Jrjn49Aw3PwLJFIlzwhgnYnTzKJ3hVSAPQ7TC4vXWAKoozX0b5Vs5b8y1UUYrH+SQAR4wgLvmZdjawE4fYuJWeNEX8P7XQ+1KWifI8XWLnYKefPpeHo+s2MVXKcWf2o7VbaImHuSRhn5tDhp9QaDeCcCP5lrKqtsdBllosEluYxRA7ew0/T7JxXhdmrD/EtSz1P0AqG+flxEj9xTsGrVWBXkcX+10+pioFRtOTnN58gOPBXe3xLdQhwkl3NwI8zSeJjN1FoRjecwq33Wl9AwNGkJDdxYfSPJ/KeWLfP3Nv+g3bjADRvhPWNrDB7uKwEUABzwqpX/HL4/epqCpD4WPs8/RYd4iTi0WuzIwti4/nEjgeXNT3gTUwoIpNbyw28wwoJdeVotSM+J712639a5GR88qUnhm8KfpSrw1oA9rA/2BAqbmWq1VkVrECEllpwzUVLxJBo9FoLMUPrSWgHcK2Xt0AAAAASUVORK5CYII=) center/contain no-repeat}
@@ -1435,6 +1440,7 @@ function bolZeradosImp() {
   const pior = [...linhas].sort((a, b) => b.pj - a.pj)[0];
   bcard(`<div class="sub">Time Império — ${D.mes}</div><h3>Zerados</h3><div class="sub" style="margin-top:0">Promotores com meta e nenhuma vida em ${ddm} (último dia útil fechado), por equipe · sem desligados</div>
     <div class="boxes"><div class="box"><b>${T.z}</b><span>zerados em ${ddm}</span></div><div class="box"><b>${P1(T.n ? T.z / T.n * 100 : 0)}</b><span>dos ${T.n} promotores</span></div><div class="box"><b>${T.sl}</b><span>sem login</span></div></div>
+    <div class="zer-xlsx"><button type="button" class="btn pri xls-btn" data-zerxlsx="1">Baixar .xlsx</button></div>
     <table class="tbl2 zer-imp" style="margin-top:12px"><tr><td><b>Equipe</b></td><td><b>Promotores com meta</b></td><td><b>Zerados</b></td><td><b>% zerados</b></td><td><b>Sem login</b></td><td><b>Vidas a menos (estim.)</b></td></tr>
       ${linhas.map(r => `<tr><td>${esc(teamById(r.id).nome.replace('Equipe ', ''))}</td><td>${r.n}</td><td class="${r.z ? 'bad' : ''}"><b>${r.z}</b></td><td>${r.n ? P1(r.z / r.n * 100) : '—'}</td><td>${r.sl}</td><td>${f1(r.perda)}</td></tr>`).join('')}
       <tr class="fix"><td><b>Time Império</b></td><td><b>${T.n}</b></td><td><b>${T.z}</b></td><td><b>${T.n ? P1(T.z / T.n * 100) : '—'}</b></td><td><b>${T.sl}</b></td><td><b>${f1(T.perda)}</b></td></tr></table>
@@ -1697,7 +1703,7 @@ function bolSemanal(eqSel = '') {
   const prox = ss.filter(x => x.prox > 0).sort((a, b) => b.prox - a.prox); const proxT = prox.reduce((a, x) => a + x.prox, 0);
   const eqNome = s => esc(teamById(s.team).nome.replace('Equipe ', ''));
   bcard(`<div class="sub">Time Império — ${D.mes}</div><h3>Semanal</h3><div class="sub" style="margin-top:0">Vidas por semana (segunda a domingo) de cada promotor(a) ativo(a) e desligado(a)${eqSel ? ' · ' + esc(teamById(eqSel).nome) : ''}</div>
-    ${selEqHtml('semEq', ssAll.map(s => s.team), eqSel, 'Todas as equipes')}
+    ${selEqXlsx(selEqHtml('semEq', ssAll.map(s => s.team), eqSel, 'Todas as equipes'), 'data-semxlsx')}
     ${proxT ? `<div class="msg"><p>📅 <b>Projeção para ${esc((SM.proxMes || 'o próximo mês').toLowerCase())}:</b> ${fmt(proxT)} vidas já com data no próximo mês (${prox.map(x => `${esc(x.s.nome)} ${x.prox}`).join(', ')}). Não entram nas semanas nem no Total.</p></div>` : ''}
     <div class="rolagem"><table class="tbl2 semanal"><tr class="cab"><td><b>Promotor(a)</b></td><td><b>Equipe</b></td>${SM.sem.map((w, i) => `<td ${R}><b>Semana ${i + 1}</b><span class="per">${w.ini} a ${w.fim}</span></td>`).join('')}<td ${R}><b>Total</b></td></tr>
     ${ss.map(x => `<tr${x.s.demitido ? ' class="demitido"' : ''}><td>${esc(x.s.nome)}</td><td>${eqNome(x.s)}</td>${x.v.map(v => `<td ${R}>${v || '<span class="muted">0</span>'}</td>`).join('')}<td ${R}><b>${x.tot}</b></td></tr>`).join('')}
@@ -1914,7 +1920,7 @@ function bolHcMvp(eqSel = '', aba = 0) {
     return {id, v, m, hc, hm, pm: hc ? hm / hc * 100 : null, cv, mvp: cv ? v / cv : null, pj, p: m ? pj / m * 100 : null}; };
   const rowsAll = D.teams.map(t => lin(t.id)).sort((a, b) => (b.p ?? -1) - (a.p ?? -1)); const rows = eqSel ? rowsAll.filter(x => x.id === eqSel) : rowsAll;
   const T = lin('imperio');
-  const selHtml = selEqHtml('hcEq', rowsAll.flatMap(x => Array(x.hc).fill(x.id)), eqSel, 'Todas as equipes · HC');
+  const selHtml = selEqXlsx(selEqHtml('hcEq', rowsAll.flatMap(x => Array(x.hc).fill(x.id)), eqSel, 'Todas as equipes · HC'), 'data-hcxlsx');
   const f1 = x => x == null ? '—' : x.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1});
   const tr = (nome, x, b) => `<tr${b ? ' class="fix"' : ''}><td>${b ? '<b>' + nome + '</b>' : nome}</td><td ${R}>${x.hc}</td><td ${R}>${x.hm}</td><td ${R}>${x.pm == null ? '—' : P1(x.pm)}</td><td ${R}><b>${f1(x.mvp)}</b></td><td ${R}>${fmt(x.v)}</td><td ${R}>${fmt(x.pj)}</td><td ${R}>${fmt(x.m)}</td><td ${R}><b class="${x.p >= 100 ? 'good' : 'bad'}">${x.p == null ? '—' : P1(x.p)}</b></td></tr>`;
   bcard(`<div class="sub">Time Império — ${D.mes}</div><h3>HC MVP</h3><div class="sub" style="margin-top:0">Média de vidas por promotor até ${D.d1}.</div>
@@ -1923,6 +1929,77 @@ function bolHcMvp(eqSel = '', aba = 0) {
       ${rows.map(x => tr(esc(teamById(x.id).nome), x)).join('')}${tr('Time Império', T, true)}</table>`, `<div class="msg ana">${anaSupervisores(eqSel)}</div>`], aba)}`, 'HC MVP', 'imperio');
   ligaAbas(); ligaSelEq('hcEq', v => bolHcMvp(v, abaAtual()));
 }
+// ===== 24/11: botões Baixar .xlsx dos cartões HC MVP, Semanal, Range de Vidas e Zerados =====
+// botão ao lado direito da caixa "Equipe" (mesmo padrão dos outros Baixar .xlsx: ícone do Excel e azul-marinho)
+const selEqXlsx = (html, attr) => html.replace(/<\/select><\/div>$/, `</select><button type="button" class="btn pri xls-btn" ${attr}="1" style="margin-left:auto">Baixar .xlsx</button></div>`);
+// tabela do cartão (tr/td) -> linhas do Excel, com números e % como número (mesmo texto da tela)
+function tabelaAoa(t) {
+  const val = x => { x = x.replace(/\s+/g, ' ').trim(); if (/^-?\d{1,3}(\.\d{3})*$/.test(x)) return +x.replace(/\./g, ''); if (/^-?\d+(\.\d{3})*,\d+$/.test(x)) return +x.replace(/\./g, '').replace(',', '.');
+    const p = /^(-?[\d.]+,\d)%$/.exec(x); if (p) return {v: +p[1].replace(/\./g, '').replace(',', '.') / 100, z: '0.0%'}; return x; };
+  return [...t.querySelectorAll('tr')].map(r => [...r.cells].map(c => val(c.innerText)));
+}
+function folhaDeAoa(aoa) { const ws = XLSX.utils.aoa_to_sheet(aoa.map(l => l.map(x => x && typeof x === 'object' ? x.v : x)));
+  aoa.forEach((l, r) => l.forEach((x, c) => { if (x && typeof x === 'object') { const cel = ws[XLSX.utils.encode_cell({r, c})]; if (cel) cel.z = x.z; } }));
+  ws['!cols'] = (aoa[0] || []).map((h, i) => ({wch: i === 0 ? 30 : Math.max(10, String(h).length + 2)})); if (aoa.length > 1) ws['!autofilter'] = {ref: XLSX.utils.encode_range({s: {r: 0, c: 0}, e: {r: aoa.length - 1, c: aoa[0].length - 1}})}; return ws; }
+const nomeArq = x => String(x).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '-');
+async function baixarTabelaCartao(btn, sel, aba, nome) {
+  if (!window.XLSX) { btn.textContent = 'Download indisponível'; return; }
+  const t = document.querySelector('#layer ' + sel); if (!t) return;
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, folhaDeAoa(tabelaAoa(t)), aba);
+  await salvaXlsx(btn, wb, nome);
+}
+const eqSelTxt = id => { const s = document.querySelector('#layer #' + id); return s && s.value ? '-' + nomeArq(teamById(s.value).nome) : '-Imperio'; };
+// Range de Vidas: analítico (promotores por faixa + cada venda do mês)
+async function baixarRange(btn) {
+  if (!window.XLSX) { btn.textContent = 'Download indisponível'; return; }
+  const eqSel = document.querySelector('#layer #rgEq')?.value || '';
+  const base = teamSellers('imperio').filter(s => s.ativo && !s.demitido), ss = (eqSel ? base.filter(s => s.team === eqSel) : base).slice()
+    .sort((a, b) => rangeIdx(b.total) - rangeIdx(a.total) || b.total - a.total || a.nome.localeCompare(b.nome, 'pt-BR'));
+  const fx = s => rangeIdx(s.total) < 0 ? 'Sem vidas' : RANGES[rangeIdx(s.total)][2];
+  const eqN = s => teamById(s.team)?.nome || '';
+  const r1 = ss.map(s => ({'Range': fx(s), 'Promotor(a)': s.nome.replace('*', ''), 'Equipe': eqN(s), 'Supervisor(a)': teamById(s.team)?.sup || '', 'Quartil': s.quart?.q || '', 'Vidas no mês': s.total, 'PF': s.pf || 0, 'PME': s.pme || 0, 'Adesão': s.ad || 0, 'Meta do mês': s.meta || 0}));
+  const r2 = ss.flatMap(s => linhasVendas(s).map(v => ({'Range': fx(s), 'Promotor(a)': s.nome.replace('*', ''), 'Equipe': eqN(s), ...v})));
+  const wb = XLSX.utils.book_new();
+  const w1 = XLSX.utils.json_to_sheet(r1); w1['!cols'] = [{wch: 24}, {wch: 26}, {wch: 20}, {wch: 18}, {wch: 8}, {wch: 12}, {wch: 6}, {wch: 6}, {wch: 8}, {wch: 12}]; if (r1.length) w1['!autofilter'] = {ref: w1['!ref']};
+  const w2 = XLSX.utils.json_to_sheet(r2.length ? r2 : [{'Range': 'Sem vendas no mês'}]); w2['!cols'] = [{wch: 24}, {wch: 26}, {wch: 20}, ...COLS_VENDAS]; if (r2.length) w2['!autofilter'] = {ref: w2['!ref']};
+  XLSX.utils.book_append_sheet(wb, w1, 'Promotores por Range'); XLSX.utils.book_append_sheet(wb, w2, 'Vendas por Range');
+  await salvaXlsx(btn, wb, `Range-de-Vidas${eqSelTxt('rgEq')}-${D.mes}-ate-${D.d1.replace('/', '-')}.xlsx`);
+}
+// Zerados: promotores com meta por equipe, dias zerados no mês (dias úteis até D-1), vidas a menos e impacto no fechamento (estimativas)
+async function baixarZeradosMes(btn) {
+  if (!window.XLSX) { btn.textContent = 'Download indisponível'; return; }
+  const dias = D.bdays.filter(d => d <= parseInt(D.d1)); const metaImp = teamSellers('imperio').reduce((a, s) => a + (s.meta || 0), 0);
+  const rows = [];
+  IMPERIO.forEach(id => { teamSellers(id).filter(s => s.meta > 0 && !s.demitido).forEach(s => {
+    const zd = dias.filter(d => !(s.daily[d - 1] > 0)); if (!zd.length) return;
+    const sl = zd.filter(d => !semOverall(d) && !(s.tempoDias || {})[d]).length;
+    const med = s.total / Math.max(1, D.duDec), menos = zd.length * med, imp = menos * D.duMes / Math.max(1, D.duDec);
+    rows.push({'Equipe': teamById(id)?.nome || id, 'Supervisor(a)': teamById(id)?.sup || '', 'Promotor(a)': s.nome.replace('*', ''), 'Quartil': s.quart?.q || '',
+      'Meta do mês': s.meta, 'Vidas no mês': s.total, 'Média por dia útil': R0(med), ['Dias úteis até ' + D.d1]: dias.length, 'Quantidade de dias': zd.length,
+      '% dos dias úteis zerado': R0(zd.length / dias.length * 100) / 100, 'Dias sem login': sl, ['Zerado em ' + D.d1.slice(0, 5)]: zd.includes(dias[dias.length - 1]) ? 'Sim' : 'Não',
+      'Dias zerados': zd.map(d => String(d).padStart(2, '0')).join(', '), 'Vidas a menos (estim.)': R0(menos), 'Impacto no fechamento (estim.)': R0(imp),
+      '% de impacto na meta da gestão Império (estim.)': -R0(imp / metaImp * 100) / 100}); }); });
+  rows.sort((a, b) => a['Equipe'].localeCompare(b['Equipe'], 'pt-BR') || b['Quantidade de dias'] - a['Quantidade de dias'] || a['Promotor(a)'].localeCompare(b['Promotor(a)'], 'pt-BR'));
+  const sum = k => rows.reduce((a, r) => a + (r[k] || 0), 0), impT = rows.reduce((a, r) => a + r['Impacto no fechamento (estim.)'], 0);
+  rows.push({'Equipe': 'Total', 'Supervisor(a)': '', 'Promotor(a)': `${rows.length} promotores com dia zerado`, 'Quartil': '', 'Meta do mês': sum('Meta do mês'), 'Vidas no mês': sum('Vidas no mês'), 'Média por dia útil': '',
+    ['Dias úteis até ' + D.d1]: dias.length, 'Quantidade de dias': sum('Quantidade de dias'), '% dos dias úteis zerado': '', 'Dias sem login': sum('Dias sem login'), ['Zerado em ' + D.d1.slice(0, 5)]: rows.filter(r => r['Zerado em ' + D.d1.slice(0, 5)] === 'Sim').length,
+    'Dias zerados': '', 'Vidas a menos (estim.)': R0(sum('Vidas a menos (estim.)')), 'Impacto no fechamento (estim.)': R0(impT), '% de impacto na meta da gestão Império (estim.)': -R0(impT / metaImp * 100) / 100});
+  const ws = XLSX.utils.json_to_sheet(rows); const rg = XLSX.utils.decode_range(ws['!ref']); const hdr = Object.keys(rows[0] || {});
+  ['% dos dias úteis zerado', '% de impacto na meta da gestão Império (estim.)'].forEach(k => { const c = hdr.indexOf(k); for (let r = 1; r <= rg.e.r; r++) { const cel = ws[XLSX.utils.encode_cell({r, c})]; if (cel && cel.t === 'n') cel.z = '0.0%'; } });
+  ws['!cols'] = [{wch: 20}, {wch: 18}, {wch: 26}, {wch: 8}, {wch: 11}, {wch: 12}, {wch: 12}, {wch: 14}, {wch: 12}, {wch: 14}, {wch: 12}, {wch: 12}, {wch: 34}, {wch: 14}, {wch: 16}, {wch: 20}];
+  ws['!autofilter'] = {ref: XLSX.utils.encode_range({s: {r: 0, c: 0}, e: {r: rows.length - 1, c: hdr.length - 1}})};
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Zerados no mês');
+  const nota = [['Como ler'], [`Dias úteis de 01/${D.mm} até ${D.d1} (${dias.length} dias). Zerado = promotor(a) com meta e nenhuma vida no dia (sem desligados).`],
+    ['Vidas a menos (estim.) = dias zerados × média de vidas por dia útil do promotor(a) no mês (vidas do mês ÷ ' + D.duDec + ' dias úteis decorridos), mesma regra do cartão Zerados.'],
+    [`Impacto no fechamento (estim.) = vidas a menos × ${D.duMes} ÷ ${D.duDec} (efeito na projeção do mês). % de impacto = impacto ÷ meta da gestão Império (${fmt(metaImp)}), negativo.`],
+    ['Dias sem login = dias zerados sem registro na Overall Activity (falta, não conversão).']];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(nota), 'Como ler');
+  await salvaXlsx(btn, wb, `Zerados-Imperio-${D.mes}-ate-${D.d1.replace('/', '-')}.xlsx`);
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-hcxlsx],[data-semxlsx],[data-rgxlsx],[data-zerxlsx]'); if (!b) return;
+  if (b.dataset.hcxlsx) baixarTabelaCartao(b, 'table.hcmvp', 'HC MVP', `HC-MVP${eqSelTxt('hcEq')}-${D.mes}-ate-${D.d1.replace('/', '-')}.xlsx`);
+  else if (b.dataset.semxlsx) baixarTabelaCartao(b, 'table.semanal', 'Semanal', `Semanal${eqSelTxt('semEq')}-${D.mes}-ate-${D.d1.replace('/', '-')}.xlsx`);
+  else if (b.dataset.rgxlsx) baixarRange(b); else if (b.dataset.zerxlsx) baixarZeradosMes(b); });
 // ===== Range de Vidas (pedido de 05/11): promotores por faixa de vidas realizadas no mês =====
 const RANGES = [[1, 19, 'De 01 a 19 vidas'], [20, 29, 'De 20 a 29 vidas'], [30, 49, 'De 30 a 49 vidas'], [50, 59, 'De 50 a 59 vidas'], [60, 79, 'De 60 a 79 vidas'], [80, 99, 'De 80 a 99 vidas'], [100, Infinity, 'A partir de 100 vidas']];
 const rangeIdx = v => v > 0 ? RANGES.findIndex(([a, b]) => v >= a && v <= b) : -1;
@@ -1930,7 +2007,7 @@ const rangeCurto = i => i < 0 ? 'sem vidas' : (RANGES[i][1] === Infinity ? '100+
 function bolRange(eqSel = '', aba = 0) {
   const base = teamSellers('imperio').filter(s => s.ativo && !s.demitido);
   const ss = eqSel ? base.filter(s => s.team === eqSel) : base;
-  const selHtml = selEqHtml('rgEq', base.map(s => s.team), eqSel, 'Todas as equipes · promotores');
+  const selHtml = selEqXlsx(selEqHtml('rgEq', base.map(s => s.team), eqSel, 'Todas as equipes · promotores'), 'data-rgxlsx');
   const grp = RANGES.map((r, i) => ss.filter(s => rangeIdx(s.total) === i));
   const zero = ss.filter(s => !(s.total > 0));
   const comV = ss.length - zero.length;
@@ -2001,10 +2078,11 @@ function bolMetaDia(diaSel = 0, aba = 0) {
   const t1 = `<table class="tbl2 metadia"><tr><td><b>Supervisor</b></td><td ${R}><b>HC</b></td><td ${R}><b>Meta Sup</b></td><td ${R}><b>MVP Meta</b></td><td ${R}><b>Meta diária</b></td><td ${R}><b>Vidas ${ddmm(dia)}</b></td><td ${R}><b>% Meta diária</b></td><td><b>Resultado</b></td></tr>
     ${META_DIA.map(r => { const x = v(r); return `<tr><td>${esc(r.rot)}</td><td ${R}>${r.hc}</td><td ${R}>${fmt(r.sup)}</td><td ${R}>${r.mvp}</td><td ${R}><b>${r.dia}</b></td><td ${R}><b>${x}</b></td><td ${R}>${r.dia ? P1(x / r.dia * 100) : '—'}</td><td>${r.dia ? st(x, r.dia) : '<span class="muted">sem meta</span>'}</td></tr>`; }).join('')}
     <tr class="fix"><td><b>Time Império</b></td><td ${R}><b>${META_DIA_TOT.hc}</b></td><td ${R}><b>${fmt(META_DIA_TOT.sup)}</b></td><td ${R}><b>${META_DIA_TOT.mvp}</b></td><td ${R}><b>${META_DIA_TOT.dia}</b></td><td ${R}><b>${vT}</b></td><td ${R}><b>${P1(vT / META_DIA_TOT.dia * 100)}</b></td><td>${st(vT, META_DIA_TOT.dia)}</td></tr></table>`;
-  const btn = `<div class="md-xlsx"><button type="button" class="btn pri" data-mdxlsx="1">Baixar .xlsx</button><span class="hint">planilha com o dia a dia dos dias úteis de ${D.mes} até ${D.d1}</span></div>`;
+  const btn = '';  // 24/11: o Baixar .xlsx fica na linha das abas (lado direito), sem a frase do dia a dia
   const pane1 = btn + t1 + `<div class="msg"><p>🎯 Meta diária do Time Império: <b>${META_DIA_TOT.dia} vidas por dia útil</b>, dividida pelas metas individuais dos supervisores. HC e Meta Sup. vêm do Desdobramento (todos os promotores da equipe no Desdobramento atual, inclusive Área DESLIGADA; sem assistentes, vagas, afastados e licença); MVP Meta = Meta Sup. ÷ HC; Meta diária = Meta Sup. ÷ ${D.duMes} dias úteis de ${D.mes}. Vidas do dia = vendas confirmadas com data do dia (PF e Adesão pela data de cadastramento; PME pela Dt.Valid., como no restante do painel). Verde = bateu a meta diária; vermelho = não bateu. O dia a dia de todos os dias úteis do mês está no botão Baixar .xlsx. Só dias úteis fechados (até ${D.d1}); vendas de fim de semana e feriado não têm meta diária.</p></div>`;
   bcard(`<div class="sub">Time Império — ${D.mes}</div><h3>Meta diária</h3><div class="sub" style="margin-top:0">Metas individuais dos supervisores · ${META_DIA_TOT.dia} vidas por dia útil</div>
     ${sel}${abasCard(['Meta diária', 'O que mudou'], [pane1, `<div class="msg ana">${anaMetaDia(dias)}</div>`], aba)}`, 'Meta diária', 'imperio');
+  { const ct = $('#layer .ctabs'); if (ct) ct.insertAdjacentHTML('beforeend', '<button type="button" class="btn pri" data-mdxlsx="1" style="margin-left:auto;align-self:center;margin-bottom:4px">Baixar .xlsx</button>'); }
   ligaAbas(); const bx = $('#layer [data-mdxlsx]'); if (bx) bx.addEventListener('click', () => baixarMetaDia(bx)); const s = $('#mdDia'); if (s) s.addEventListener('change', () => bolMetaDia(+s.value, abaAtual()));
 }
 // "O que mudou" da Meta diária: para cada dia útil fechado (o mais recente primeiro), quem bateu, quem não bateu e por quê
