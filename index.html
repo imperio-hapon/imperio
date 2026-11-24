@@ -559,7 +559,7 @@ const SAIU_DESD = new Set(D.saiuDesd || []);
 const DESLIGADOS_FIXOS = new Set(['YGOR OLIVEIRA', 'PAULO ALEXANDRE']);  // 3ª regra (30/10): informados pela usuária
 D.sellers.forEach(s => { s.demitido = /DESLIG|DEMIT/i.test(s.quart?.status || '') || SAIU_DESD.has(s.key) || DESLIGADOS_FIXOS.has(s.key); });
 const DEMITIDOS = new Set(D.sellers.filter(s => s.demitido).map(s => s.nome));
-const QM_FORA = {"GABRIELA REIS": "Atestado Médico", "JAQUELINE SILVA": "Período de Férias", "MARIANA FELIX": "Período de Férias"};  // fora da meta de monitoria (18/11): meta 0 e nome em vermelho
+const QM_FORA = {"GABRIELA REIS": "Atestado Médico"};  // fora da meta de monitoria (18/11): meta 0 e nome em vermelho; 24/11: Jaqueline Silva e Mariana Felix reativadas
 const QM_FORA_NOMES = new Set(D.sellers.filter(s => QM_FORA[s.key]).map(s => s.nome));
 function pintaDemitidos(root) {
   root.querySelectorAll('td, button.lnk, li, span, b, a').forEach(el => { const t = (el.childElementCount ? '' : el.textContent).trim().replace(/^\d+º\s*/, '').replace(/\s*·.*$/, '');
